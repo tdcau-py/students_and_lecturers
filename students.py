@@ -15,8 +15,28 @@ class Student:
         return f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за домашние задания: {avg:.1f}\n' \
                f'Курсы в процессе изучения: {courses_in_progress}\nЗавершенные курсы: {finished_courses}'
 
+    def __lt__(self, other):
+        return self < other
+
+    def __le__(self, other):
+        return self <= other
+
+    def __gt__(self, other):
+        return self > other
+
+    def __ge__(self, other):
+        return self >= other
+
+    def __eq__(self, other):
+        return self == other
+
+    def __ne__(self, other):
+        return self != other
+
     def rate_lecture(self, lecturer, course, grade):
-        if isinstance(lecturer, Lecturer) and course in lecturer.courses_attached and course in self.courses_in_progress:
+        if (isinstance(lecturer, Lecturer) and
+                course in lecturer.courses_attached and
+                course in self.courses_in_progress):
             if course in lecturer.grades:
                 lecturer.grades[course].append(grade)
             else:
@@ -41,16 +61,41 @@ class Mentor:
     def __str__(self):
         return f'Имя: {self.name}\nФамилия: {self.surname}'
 
+    def __lt__(self, other):
+        return self < other
+
+    def __le__(self, other):
+        return self <= other
+
+    def __gt__(self, other):
+        return self > other
+
+    def __ge__(self, other):
+        return self >= other
+
+    def __eq__(self, other):
+        return self == other
+
+    def __ne__(self, other):
+        return self != other
+
 
 class Lecturer(Mentor):
-    grades = {}
+    def __init__(self, name, surname):
+        Mentor.__init__(self, name, surname)
+        self.grades = {}
 
     def __str__(self):
-        avg = 0
-        for grade in self.grades.values():
-            avg += (sum(grade) / len(grade))
+        avg = self.__avg_grades_lecture()
 
         return Mentor.__str__(self) + f'\nСредняя оценка за лекции : {avg:.1f}'
+
+    def __avg_grades_lecture(self):
+        self.avg = 0
+        for grade in self.grades.values():
+            self.avg += (sum(grade) / len(grade))
+
+        return self.avg
 
 
 class Reviewer(Mentor):
@@ -64,27 +109,49 @@ class Reviewer(Mentor):
             return 'Ошибка'
 
 
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python']
+if __name__ == '__main__':
+    student_1 = Student(name='Mikhail', surname='Ivanov', gender='Male')
+    student_2 = Student(name='Elena', surname='Petrova', gender='Female')
 
-cool_reviewer = Reviewer('Some', 'Buddy')
-cool_reviewer.courses_attached += ['Python']
+    student_1.courses_in_progress += ['Python', 'Git']
+    student_1.finished_courses += ['Basics of HTML and CSS']
+    student_2.courses_in_progress += ['Python']
+    student_2.finished_courses += ['Git']
 
-cool_reviewer.rate_hw(best_student, 'Python', 10)
-cool_reviewer.rate_hw(best_student, 'Python', 10)
-cool_reviewer.rate_hw(best_student, 'Python', 10)
+    lecture_1 = Lecturer(name='Guido', surname='van Rossum')
+    lecture_2 = Lecturer(name='Linus', surname='Torvalds')
 
-print(best_student.grades)
+    lecture_1.courses_attached += ['Python']
+    lecture_2.courses_attached += ['Git']
 
-lecture_1 = Lecturer('Bryan', 'Smith')
-lecture_1.courses_attached.append('Python')
+    reviewer_1 = Reviewer(name='Monty', surname='Python')
+    reviewer_2 = Reviewer(name='Pavel', surname='Borisov')
 
-best_student.rate_lecture(lecture_1, 'Python', 7)
-best_student.rate_lecture(lecture_1, 'Python', 10)
-best_student.rate_lecture(lecture_1, 'Python', 9)
+    reviewer_1.courses_attached += ['Python']
+    reviewer_2.courses_attached += ['Python', 'Git']
 
-print(lecture_1)
+    student_1.rate_lecture(lecture_1, 'Python', 10)
+    student_1.rate_lecture(lecture_1, 'Python', 10)
+    student_1.rate_lecture(lecture_2, 'Git', 10)
 
-print(cool_reviewer)
+    student_2.rate_lecture(lecture_1, 'Python', 9)
+    student_2.rate_lecture(lecture_2, 'Git', 9)
 
-print(best_student)
+    reviewer_1.rate_hw(student_1, 'Python', 9)
+    reviewer_2.rate_hw(student_1, 'Git', 10)
+    reviewer_1.rate_hw(student_2, 'Python', 8)
+    reviewer_1.rate_hw(student_2, 'Python', 9)
+
+    print('Студенты:')
+    print(student_1)
+    print(f'\n{student_2}')
+    print('-' * 20)
+    print('Лекторы:')
+    print(lecture_1)
+    print(lecture_1.grades)
+    print(f'\n{lecture_2}')
+    print(lecture_2.grades)
+    print('-' * 20)
+    print('Проверяющие:')
+    print(reviewer_1)
+    print(f'\n{reviewer_2}')
