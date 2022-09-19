@@ -107,22 +107,26 @@ class Reviewer(Mentor):
             return 'Ошибка'
 
 
-def avg_rate(obj_list: list, course: str) -> dict:
+def avg_rate_students(obj_list: list, course: str) -> dict:
     """Подсчитывает среднюю оценку на определенном курсе"""
     avg_students = {}
-    avg_lectures = {}
 
     for obj in obj_list:
         if isinstance(obj, Student) and course in obj.courses_in_progress and course in obj.grades:
             avg_rate_hw = sum(obj.grades[course]) / len(obj.grades[course])
             avg_students[f'{obj.name} {obj.surname}'] = avg_rate_hw
 
-        elif isinstance(obj, Lecturer) and course in obj.courses_attached and course in obj.grades:
+    return avg_students
+
+
+def avg_rate_lecturers(obj_list: list, course: str) -> dict:
+    """Подсчитывает среднюю оценку на определенном курсе"""
+    avg_lectures = {}
+
+    for obj in obj_list:
+        if isinstance(obj, Lecturer) and course in obj.courses_attached and course in obj.grades:
             avg_rate_lecture = sum(obj.grades[course]) / len(obj.grades[course])
             avg_lectures[f'{obj.name} {obj.surname}'] = avg_rate_lecture
-
-    if avg_students:
-        return avg_students
 
     return avg_lectures
 
@@ -177,12 +181,12 @@ if __name__ == '__main__':
     print(f'\n{reviewer_2}')
 
     print(f'\nВывод средней оценки студентов по курсу Python:')
-    avg_rates_students = avg_rate([student_1, student_2], 'Python')
+    avg_rates_students = avg_rate_students([student_1, student_2], 'Python')
     for k, v in avg_rates_students.items():
         print(f'Средняя оценка по курсу Python студента {k} - {v:.1f}')
 
     print(f'\nВывод средней оценки лекторов по курсу Python:')
-    avg_rates_lectures = avg_rate([lecture_1, lecture_2], 'Python')
+    avg_rates_lectures = avg_rate_lecturers([lecture_1, lecture_2], 'Python')
     for k, v in avg_rates_lectures.items():
         print(f'Средняя оценка у лектора {k} в рамках курса Python - {v:.1f}')
 
